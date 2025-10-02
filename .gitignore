@@ -1,0 +1,55 @@
+# ─────────────────────────────────────────────────────────────
+# PlatformIO: artefactos de compilación y cachés (reproducibles)
+#   .pio/ incluye: build/, libdeps/, paquetes/descargas, etc.
+#   Todo se reconstruye a partir de platformio.ini
+# ─────────────────────────────────────────────────────────────
+.pio/
+.pioenvs/          
+.piolibdeps/       
+
+# ─────────────────────────────────────────────────────────────
+# Configuraciones locales/por usuario (no necesarias para compilar)
+# ─────────────────────────────────────────────────────────────
+.vscode*          
+          
+*.code-workspace   
+
+# PlatformIO: overrides locales por usuario (puertos, velocidades, etc.)
+platformio_override.ini
+
+# ─────────────────────────────────────────────────────────────
+# Entornos locales y cachés de Python (si usas PIO Core vía Python)
+# ─────────────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# ─────────────────────────────────────────────────────────────
+# Archivos del sistema/editores (ruido)
+# ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+*~                 
+*.swp
+*.swo
+
+# ─────────────────────────────────────────────────────────────
+# Secretos/variables locales (si las usas para builds)
+#   Sube un .env.example con claves vacías si lo necesitas
+# ─────────────────────────────────────────────────────────────
+.env
+.env.*
+*.env
+*.local
+*.secret
+
+# ─────────────────────────────────────────────────────────────
+# Binarios exportados manualmente (normalmente están dentro de .pio/)
+#   Descomenta si sueles copiar firmware*.bin al root del repo
+# ─────────────────────────────────────────────────────────────
+# /firmware*.bin
+# /*.elf
+# /*.map
