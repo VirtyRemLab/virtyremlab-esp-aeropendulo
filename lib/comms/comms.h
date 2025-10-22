@@ -8,8 +8,10 @@
 #include <WiFi.h>  
 #include <Pantalla.h>  
 #include <tareas.h>
+#include <states.h>
+#include <control.h>
 
-#define WEBSOCKET_DATA_LENGH 2
+#define WEBSOCKET_DATA_LENGH 6
 
 
 extern String mensaje;

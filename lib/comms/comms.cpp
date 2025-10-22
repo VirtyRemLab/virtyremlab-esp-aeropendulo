@@ -16,6 +16,9 @@ void WIFIInit(){
   Serial.println("Conectando a la red WiFi...");
   // Inicia la conexión WiFi
   WiFi.mode(WIFI_STA);
+  WiFi.setTxPower(WIFI_POWER_19_5dBm);
+  WiFi.setSleep(false);
+
   WiFi.begin(SSID, PASSWORD);
 
   // Espera hasta que se conecte
@@ -102,9 +105,11 @@ void webSocketLoop(){
 void tareaTransmision(void* parameters){
   for (;;){
     xSemaphoreTake(xBinarySemaphoreTransmision, portMAX_DELAY);
-    mensaje = String(y,2);
-    data[0] = (float)y;
+    mensaje = String(_yk,2);
+    data[0] = (float) SYSTEM_STATE;
+    data[1] = (float)_yk;
     webSocketSendMainDataBinary(data, WEBSOCKET_DATA_LENGH);
-    Serial.println("Enviado: " + mensaje + mensaje + mensaje + mensaje + mensaje + mensaje + mensaje);
+    Serial.print("Enviado:");
+    Serial.println(mensaje);
     }
 }

@@ -28,6 +28,12 @@ void setup()
   // ------------------------------------------------------------
   // Puerto serie  
   Serial.begin(115200);
+
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  // motores
+  pinMode(MOTOR1_ESC_PIN, OUTPUT);
+  pinMode(MOTOR2_ESC_PIN, OUTPUT);
   // ------------------------------------------------------------
   // Semáforos
   semaphoresInit();
