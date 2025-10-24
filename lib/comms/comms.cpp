@@ -67,21 +67,39 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
         // Cambio de frequencia
         cJSON *root = cJSON_Parse((const char *) payload);
        
-        cJSON *cmd_poweron = cJSON_GetObjectItem(root, "POWERON");
-        cJSON *cmd_poweroff = cJSON_GetObjectItem(root, "POWEROFF");
+        cJSON *cmd_event = cJSON_GetObjectItem(root, "event");
+        cJSON *cmd_vel_man = cJSON_GetObjectItem(root, "vel_man");
         //cJSON *tm_item = cJSON_GetObjectItem(root, "tm");
       
       
-        if (cJSON_IsString(cmd_poweron) && (cmd_poweron->valuestring != NULL)) {
-          SYSTEM_EVENTS = POWERON;
-          event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS );
+        if (cJSON_IsString(cmd_event) && (cmd_event->valuestring != NULL)) {
+          switch (atoi(cmd_event->valuestring))
+          {
+          case POWEROFF:
+              SYSTEM_EVENTS = POWEROFF;
+              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+
+            break;
+          
+          case POWERON:
+              SYSTEM_EVENTS = POWERON;
+              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+
+            break;
+
+
+            default:
+            break;
+          }
         }
 
-        if (cJSON_IsString(cmd_poweroff) && (cmd_poweroff->valuestring != NULL)) {
-          SYSTEM_EVENTS = POWEROFF;
+
+        if (cJSON_IsString(cmd_vel_man) && (cmd_vel_man->valuestring != NULL)) {
+          _r_vel_man =atof(cmd_vel_man->valuestring);
           event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
 
         }
+
 
 
         // if (cJSON_IsString(tm_item) && (tm_item->valuestring != NULL)) {
@@ -109,6 +127,22 @@ void webSocketLoop(){
 ////////////////////////////////////////////////////////////
 // Tarea de trasnmisión
 ////////////////////////////////////////////////////////////
+
+// De manera cíclica se envia el estado del sistema al servidor WS
+// Longitud de los paquetes: 6 floats
+// REG 0: Estado del sistema 
+// REG 1: yk
+// REG 2: rk
+// REG 3: uk
+// REG 4: ek
+// REG 5: M1
+// REG 6: M2
+// REG 7: vel_man
+// REG 8: Kp
+// REG 9: Ki
+// REG 10: Kd
+
+
 
 void tareaTransmision(void* parameters){
   for (;;){

@@ -42,10 +42,12 @@ void tareaControl(void* parameters){
 
       switch (SYSTEM_STATE)
       {
-
+        // Modo en espera 
         case  STANDBY:
           _motors_power = false;
           break;
+
+        // Modo ready con los motores activos  
         case READY:
           
           // armado de los motores
@@ -65,11 +67,15 @@ void tareaControl(void* parameters){
 
           break;
         
-
+        // Modo manual en cadena abierta. El usuario puede indicar la velocidad de los motores
+        // La variable de la velocidad de los motores será _r_vel_man
         case TEST:
-          
+        
+          break;
+
+        // Modo control en cadena cerrada mediante PID. El usuario puede cambiar las ganancias del regulador
         case PID:
-          
+
           break;
         
         default:
