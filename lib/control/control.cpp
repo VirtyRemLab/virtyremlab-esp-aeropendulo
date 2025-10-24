@@ -1,6 +1,11 @@
 #include "control.h"
 
-float volatile _yk = 0;
+float volatile _yk = 0, _r_vel_man=0;
+bool volatile  _motors_power=false;
+
+// Variables motores
+ESC _esc_M1 (MOTOR1_ESC_PIN, 1000, 2000, MOTORS_ARM_SPEED); 
+ESC _esc_M2 (MOTOR2_ESC_PIN, 1000, 2000, MOTORS_ARM_SPEED); 
 
 float lecturaPosicionAngular(adc1_channel_t adc_channel){
 
@@ -17,6 +22,15 @@ float lecturaPosicionAngular(adc1_channel_t adc_channel){
 
 }
 
+
+void initHardwareControl(){
+  pinMode(MOTORS_POWER_PIN, OUTPUT);
+
+  // motores
+  pinMode(MOTOR1_ESC_PIN, OUTPUT);
+  pinMode(MOTOR2_ESC_PIN, OUTPUT);
+}
+
 void tareaControl(void* parameters){
   
     for (;;)
@@ -28,25 +42,54 @@ void tareaControl(void* parameters){
 
       switch (SYSTEM_STATE)
       {
-        case PID:
+
+        case  STANDBY:
+          _motors_power = false;
+          break;
+        case READY:
+          
+          // armado de los motores
+          if(! _motors_power){
+            _motors_power = true;
+            _esc_M1.arm(); 
+            _esc_M2.arm();
+            delay(100);
+            digitalWrite(MOTORS_POWER_PIN, _motors_power);
+            delay(500);
+            _esc_M1.speed(MOTORS_MIN_SPEED-200); 
+            _esc_M2.speed(MOTORS_MIN_SPEED-200);             
+          }
+
           _yk = lecturaPosicionAngular(PIN_POT);
+          
+
+          break;
+        
+
+        case TEST:
+          
+        case PID:
+          
           break;
         
         default:
           break;
       }
+      
+      digitalWrite(MOTORS_POWER_PIN, _motors_power);
 
 
 
-      // Simulación
-      y = sin(2.*PI*freq*t/SAMPLES_IN_S);  // Simula valor entre 0.0 y 1
+
+
+
+
       t++;
-    
+
       // Release data transmission thread
       if (((unsigned long)t)%SAMPLE_PERIOD_COM_MS==0){
         xSemaphoreGive(xBinarySemaphoreTransmision);
+        t = 0;
       }
-    
-  
     }
   }

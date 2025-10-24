@@ -7,6 +7,7 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <Arduino.h>
+#include <states.h>
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -22,7 +23,7 @@ void OLED_clear();
 void OLED_waiting_conn();
 
 // Pantalla principal
-void OLED_main_info(double freq, unsigned long Tm, uint32_t IP);
+void OLED_main_info(enum STATES state, double freq, unsigned long Tm, uint32_t IP);
 // Pantalla desconectado
 void OLED_desconnect();
 

@@ -1,21 +1,53 @@
 #include "states.h"
 
-enum STATES SYSTEM_STATE = PID;
+enum STATES SYSTEM_STATE = STANDBY;
 enum EVENTS SYSTEM_EVENTS = NONE;
 
+char *state2string(enum STATES state){
+    switch (state)
+    {
+    case STANDBY: 
+        return "STANDBY";
+    case READY:
+        return "READY";    
+    case TEST:
+        return "TEST";
+    case PID:      
+        return "PID";
+    case ALARM:
+        return "ALARM";
 
+    default:
+        break;
+    }
+}
 
 void event_dispatcher(enum STATES* state, enum EVENTS* event){
 
-
-    switch (SYSTEM_STATE)
+    Serial.println("Evento");
+    switch (*state)
     {
 
     case STANDBY:
-        if(*event==RUN_PID){
+        if(*event==POWERON){
+            *state = READY;
+        }
+        if(*event==FAULT){
+            *state = ALARM;
+        }
+
+        break;
+
+
+    case READY:
+        if(*event==POWEROFF){
+            *state = STANDBY;
+        }
+        
+        if(*event==START_PID){
             *state = PID;
         }
-        if(*event==RUN_TEST){
+        if(*event==START_TEST){
             *state = TEST;
         }
         if(*event==FAULT){
@@ -26,7 +58,7 @@ void event_dispatcher(enum STATES* state, enum EVENTS* event){
 
     case TEST:
         if(*event==STOP){
-            *state = STANDBY;
+            *state = READY;
         }
 
         if(*event==FAULT){
@@ -38,7 +70,7 @@ void event_dispatcher(enum STATES* state, enum EVENTS* event){
 
         case PID:
         if(*event==STOP){
-            *state = STANDBY;
+            *state = READY;
         }
 
         if(*event==FAULT){

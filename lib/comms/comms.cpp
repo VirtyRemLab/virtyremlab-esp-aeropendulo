@@ -67,19 +67,27 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
         // Cambio de frequencia
         cJSON *root = cJSON_Parse((const char *) payload);
        
-        cJSON *freq_item = cJSON_GetObjectItem(root, "freq");
-        cJSON *tm_item = cJSON_GetObjectItem(root, "tm");
+        cJSON *cmd_poweron = cJSON_GetObjectItem(root, "POWERON");
+        cJSON *cmd_poweroff = cJSON_GetObjectItem(root, "POWEROFF");
+        //cJSON *tm_item = cJSON_GetObjectItem(root, "tm");
       
       
-        if (cJSON_IsString(freq_item) && (freq_item->valuestring != NULL)) {
-          printf("freq: %f\n", atof(freq_item->valuestring) );
-          freq = atof(freq_item->valuestring);
+        if (cJSON_IsString(cmd_poweron) && (cmd_poweron->valuestring != NULL)) {
+          SYSTEM_EVENTS = POWERON;
+          event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS );
         }
-  
-        if (cJSON_IsString(tm_item) && (tm_item->valuestring != NULL)) {
-          printf("Tm: %f\n", atof(tm_item->valuestring) );
-          Tm = (unsigned long) atof(tm_item->valuestring);
+
+        if (cJSON_IsString(cmd_poweroff) && (cmd_poweroff->valuestring != NULL)) {
+          SYSTEM_EVENTS = POWEROFF;
+          event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+
         }
+
+
+        // if (cJSON_IsString(tm_item) && (tm_item->valuestring != NULL)) {
+        //   printf("Tm: %f\n", atof(tm_item->valuestring) );
+        //   Tm = (unsigned long) atof(tm_item->valuestring);
+        // }
       
         break;
     }

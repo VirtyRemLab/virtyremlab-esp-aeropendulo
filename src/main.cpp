@@ -29,11 +29,11 @@ void setup()
   // Puerto serie  
   Serial.begin(115200);
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  // ------------------------------------------------------------
+  // Hardware control
 
-  // motores
-  pinMode(MOTOR1_ESC_PIN, OUTPUT);
-  pinMode(MOTOR2_ESC_PIN, OUTPUT);
+  initHardwareControl();
+
   // ------------------------------------------------------------
   // Semáforos
   semaphoresInit();
@@ -64,7 +64,7 @@ void loop() {
     OLED_desconnect();
   }
   else{
-    OLED_main_info(freq,Tm,WiFi.localIP());
+    OLED_main_info(SYSTEM_STATE, freq,Tm,WiFi.localIP());
     
   }
 

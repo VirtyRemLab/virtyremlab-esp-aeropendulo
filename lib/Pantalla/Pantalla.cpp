@@ -35,7 +35,7 @@ void OLED_waiting_conn(){
   display.display();
 }
 
-void OLED_main_info(double freq, unsigned long Tm, uint32_t IP){
+void OLED_main_info(enum STATES state,double freq, unsigned long Tm, uint32_t IP){
   OLED_clear();
   display.print("WIFI \n");
   display.print("IP:");
@@ -43,6 +43,7 @@ void OLED_main_info(double freq, unsigned long Tm, uint32_t IP){
   display.print("WEBSOCKET CONNECTION \n");
   display.print("Tm: " + String(Tm) + "\n");
   display.print("Freq: " + String(freq) + "\n");
+  display.print("STATE: " + String(state2string(state)) + "\n");
   display.display();
 }
 
