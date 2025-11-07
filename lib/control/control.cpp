@@ -38,13 +38,14 @@ void tareaControl(void* parameters){
       // Espera hasta que la ISR libere el semáforo
       xSemaphoreTake(xBinarySemaphoreControl, portMAX_DELAY);
       
-
+      _yk = lecturaPosicionAngular(PIN_POT);
 
       switch (SYSTEM_STATE)
       {
         // Modo en espera 
         case  STANDBY:
           _motors_power = false;
+          _r_vel_man = 0;
           break;
 
         // Modo ready con los motores activos  
@@ -62,7 +63,7 @@ void tareaControl(void* parameters){
             _esc_M2.speed(MOTORS_MIN_SPEED-200);             
           }
 
-          _yk = lecturaPosicionAngular(PIN_POT);
+          
           
 
           break;
@@ -70,6 +71,9 @@ void tareaControl(void* parameters){
         // Modo manual en cadena abierta. El usuario puede indicar la velocidad de los motores
         // La variable de la velocidad de los motores será _r_vel_man
         case TEST:
+            _esc_M1.speed(MOTORS_MIN_SPEED+_r_vel_man); 
+            _esc_M2.speed(MOTORS_MIN_SPEED-_r_vel_man);     
+                   
         
           break;
 
@@ -81,6 +85,7 @@ void tareaControl(void* parameters){
         default:
           break;
       }
+      
       
       digitalWrite(MOTORS_POWER_PIN, _motors_power);
 

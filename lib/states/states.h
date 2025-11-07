@@ -6,8 +6,8 @@ enum STATES {
   STANDBY,
   STARTING,
   READY,
-  TEST,
   PID,
+  TEST,
   ALARM
 };
 

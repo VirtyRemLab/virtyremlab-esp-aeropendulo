@@ -87,6 +87,18 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
             break;
 
+          case START_PID:
+              SYSTEM_EVENTS = START_PID;
+              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+
+            break;
+
+            case START_TEST:
+              SYSTEM_EVENTS = START_TEST;
+              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+
+            break;
+          
 
             default:
             break;
@@ -131,16 +143,16 @@ void webSocketLoop(){
 // De manera cíclica se envia el estado del sistema al servidor WS
 // Longitud de los paquetes: 6 floats
 // REG 0: Estado del sistema 
-// REG 1: yk
-// REG 2: rk
-// REG 3: uk
-// REG 4: ek
-// REG 5: M1
-// REG 6: M2
-// REG 7: vel_man
-// REG 8: Kp
-// REG 9: Ki
-// REG 10: Kd
+// REG 1: yk   R
+// REG 2: rk   R
+// REG 3: uk   R
+// REG 4: ek   R  
+// REG 5: M1   R
+// REG 6: M2   R
+// REG 7: vel_man W
+// REG 8: Kp    W
+// REG 9: Ki    W
+// REG 10: Kd   W
 
 
 
@@ -150,6 +162,7 @@ void tareaTransmision(void* parameters){
     mensaje = String(_yk,2);
     data[0] = (float) SYSTEM_STATE;
     data[1] = (float)_yk;
+    data[7] = (float)_r_vel_man;
     webSocketSendMainDataBinary(data, WEBSOCKET_DATA_LENGH);
     Serial.print("Enviado:");
     Serial.println(mensaje);

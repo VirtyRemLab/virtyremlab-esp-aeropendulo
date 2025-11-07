@@ -60,6 +60,9 @@ void event_dispatcher(enum STATES* state, enum EVENTS* event){
         if(*event==STOP){
             *state = READY;
         }
+        if(*event==POWEROFF){
+            *state = STANDBY;
+        }
 
         if(*event==FAULT){
             *state = ALARM;
@@ -71,6 +74,10 @@ void event_dispatcher(enum STATES* state, enum EVENTS* event){
         case PID:
         if(*event==STOP){
             *state = READY;
+        }
+
+        if(*event==POWEROFF){
+            *state = STANDBY;
         }
 
         if(*event==FAULT){
