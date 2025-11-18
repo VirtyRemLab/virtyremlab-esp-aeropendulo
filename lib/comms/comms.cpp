@@ -69,36 +69,50 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
        
         cJSON *cmd_event = cJSON_GetObjectItem(root, "event");
         cJSON *cmd_vel_man = cJSON_GetObjectItem(root, "vel_man");
+        cJSON *cmd_ctrl_mode = cJSON_GetObjectItem(root, "ctrl_mode");
         //cJSON *tm_item = cJSON_GetObjectItem(root, "tm");
       
-      
+        if (cJSON_IsString(cmd_ctrl_mode) && (cmd_ctrl_mode->valuestring != NULL)) {
+          switch (atoi(cmd_ctrl_mode->valuestring))
+          {
+            case TEST_MODE:
+              SYSTEM_CRTL_MODE = TEST_MODE;
+              break;
+            case PID_MODE:
+              SYSTEM_CRTL_MODE = PID_MODE;
+              break;
+
+            }
+        }
+
         if (cJSON_IsString(cmd_event) && (cmd_event->valuestring != NULL)) {
           switch (atoi(cmd_event->valuestring))
           {
           case POWEROFF:
               SYSTEM_EVENTS = POWEROFF;
-              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS,&SYSTEM_CRTL_MODE);
 
             break;
           
           case POWERON:
               SYSTEM_EVENTS = POWERON;
-              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS,&SYSTEM_CRTL_MODE);
 
             break;
 
-          case START_PID:
-              SYSTEM_EVENTS = START_PID;
-              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+          case START:
+              SYSTEM_EVENTS = START;
+              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS,&SYSTEM_CRTL_MODE);
 
             break;
 
-            case START_TEST:
-              SYSTEM_EVENTS = START_TEST;
-              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+            case STOP:
+              SYSTEM_EVENTS = STOP;
+              event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS,&SYSTEM_CRTL_MODE);
 
             break;
-          
+
+                  
 
             default:
             break;
@@ -108,7 +122,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
         if (cJSON_IsString(cmd_vel_man) && (cmd_vel_man->valuestring != NULL)) {
           _r_vel_man =atof(cmd_vel_man->valuestring);
-          event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+          //event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
 
         }
 
@@ -150,9 +164,14 @@ void webSocketLoop(){
 // REG 5: M1   R
 // REG 6: M2   R
 // REG 7: vel_man W
-// REG 8: Kp    W
-// REG 9: Ki    W
-// REG 10: Kd   W
+// REG 8: pos_man W
+// REG 9: ctrl_mode W
+// REG 10: ref_type W
+// REG 11: freq  W
+// REG 12: amp   W
+// REG 13: Kp    W
+// REG 14: Ki    W
+// REG 15: Kd    W
 
 
 
@@ -162,9 +181,13 @@ void tareaTransmision(void* parameters){
     mensaje = String(_yk,2);
     data[0] = (float) SYSTEM_STATE;
     data[1] = (float)_yk;
+    data[2] = (float)_Ref;
+    data[5] = (float)_M1;
+    data[6] = (float)_M2;
     data[7] = (float)_r_vel_man;
+    data[9] = (float)SYSTEM_CRTL_MODE;
     webSocketSendMainDataBinary(data, WEBSOCKET_DATA_LENGH);
     Serial.print("Enviado:");
-    Serial.println(mensaje);
+    Serial.println(_Ref);
     }
 }

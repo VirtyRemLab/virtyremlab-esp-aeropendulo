@@ -1,7 +1,14 @@
 #include "control.h"
 
-float volatile _yk = 0, _r_vel_man=0;
+float volatile  _r_vel_man=0,_M1=0,_M2=0,Amp=15,Freq=1/7.0;
 bool volatile  _motors_power=false;
+
+float volatile _uk[4],_ik[4],_dk,_pk, _ek[4], _yk=0,_Tm=0.001 ; 
+float volatile _Kp=7, _Ki=0 , _Kd=0, _Ref,_vM1_ms=1400,_vM2_ms=1400;
+
+float r_sin = 0;
+float r_square = 0;
+double t=0.0;
 
 // Variables motores
 ESC _esc_M1 (MOTOR1_ESC_PIN, 1000, 2000, MOTORS_ARM_SPEED); 
@@ -46,6 +53,8 @@ void tareaControl(void* parameters){
         case  STANDBY:
           _motors_power = false;
           _r_vel_man = 0;
+          _M1 = MOTORS_MIN_SPEED-200;
+          _M2 = MOTORS_MIN_SPEED-200;
           break;
 
         // Modo ready con los motores activos  
@@ -63,22 +72,26 @@ void tareaControl(void* parameters){
             _esc_M2.speed(MOTORS_MIN_SPEED-200);             
           }
 
-          
-          
+          _M1 = MOTORS_MIN_SPEED-200;
+          _M2 = MOTORS_MIN_SPEED-200;
 
           break;
         
         // Modo manual en cadena abierta. El usuario puede indicar la velocidad de los motores
         // La variable de la velocidad de los motores será _r_vel_man
         case TEST:
-            _esc_M1.speed(MOTORS_MIN_SPEED+_r_vel_man); 
-            _esc_M2.speed(MOTORS_MIN_SPEED-_r_vel_man);     
+          _M1 = MOTORS_MIN_SPEED + _r_vel_man;
+          _M2 = MOTORS_MIN_SPEED - _r_vel_man;
                    
         
           break;
 
         // Modo control en cadena cerrada mediante PID. El usuario puede cambiar las ganancias del regulador
         case PID:
+          // Calculo de la entrada
+          r_sin = Amp * (float) sin(2. * M_PI * Freq * t );
+          r_square = Amp * (float)(r_sin > 0.0);
+          _Ref = r_square;
 
           break;
         
@@ -89,18 +102,22 @@ void tareaControl(void* parameters){
       
       digitalWrite(MOTORS_POWER_PIN, _motors_power);
 
+      if(_motors_power){
+      _esc_M1.speed(_M1);
+      _esc_M2.speed(_M2);     
+      }
 
 
 
 
 
 
-      t++;
-
+      k++;
+      t += _Tm;
       // Release data transmission thread
-      if (((unsigned long)t)%SAMPLE_PERIOD_COM_MS==0){
+      if (((unsigned long)k)%SAMPLE_PERIOD_COM_MS==0){
         xSemaphoreGive(xBinarySemaphoreTransmision);
-        t = 0;
+        k = 0;
       }
     }
   }

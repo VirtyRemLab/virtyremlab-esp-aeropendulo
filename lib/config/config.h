@@ -7,7 +7,7 @@
 // TIMERS
 #define SAMPLES_IN_S 1000.
 #define SAMPLES_IN_MS 1000
-#define SAMPLE_PERIOD_COM_MS 1000
+#define SAMPLE_PERIOD_COM_MS 100
 
 
 // Dirección y puerto del servidor alojado en el backend del servicio
@@ -56,7 +56,7 @@
 // Valores del lazo de control
 extern double freq ;
 extern unsigned long Tm ;
-extern double t ;
+extern double k ;
 extern double y ;
         
 

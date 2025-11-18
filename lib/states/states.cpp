@@ -2,6 +2,7 @@
 
 enum STATES SYSTEM_STATE = STANDBY;
 enum EVENTS SYSTEM_EVENTS = NONE;
+enum CTRL_MODES SYSTEM_CRTL_MODE=TEST_MODE;
 
 char *state2string(enum STATES state){
     switch (state)
@@ -22,7 +23,7 @@ char *state2string(enum STATES state){
     }
 }
 
-void event_dispatcher(enum STATES* state, enum EVENTS* event){
+void event_dispatcher(enum STATES* state, enum EVENTS* event, enum CTRL_MODES* ctrl_mode ){
 
     Serial.println("Evento");
     switch (*state)
@@ -44,10 +45,10 @@ void event_dispatcher(enum STATES* state, enum EVENTS* event){
             *state = STANDBY;
         }
         
-        if(*event==START_PID){
+        if(*event==START && *ctrl_mode==PID_MODE){
             *state = PID;
         }
-        if(*event==START_TEST){
+        if(*event==START && *ctrl_mode==TEST_MODE){
             *state = TEST;
         }
         if(*event==FAULT){
