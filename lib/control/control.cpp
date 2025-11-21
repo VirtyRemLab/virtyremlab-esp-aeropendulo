@@ -1,11 +1,11 @@
 #include "control.h"
 
-float volatile  _r_vel_man=0,_M1=0,_M2=0,Amp=15,Freq=1/7.0;
+float volatile  _r_vel_man=0,_M1=0,_M2=0,Amp=15,Freq=1/15.0;
 bool volatile  _motors_power=false;
 
 float volatile _uk[4],_ik[4],_dk,_pk, _ek[4], _yk=0,_Tm=0.001 ; 
 float volatile _Kp=7, _Ki=0 , _Kd=0, _Ref,_vM1_ms=1400,_vM2_ms=1400;
-
+int _v_ref_ms = 1400;
 float r_sin = 0;
 float r_square = 0;
 double t=0.0;
@@ -45,8 +45,12 @@ void tareaControl(void* parameters){
       // Espera hasta que la ISR libere el semáforo
       xSemaphoreTake(xBinarySemaphoreControl, portMAX_DELAY);
       
+      desplazartabla(_ik, 4);
+      desplazartabla(_ek, 4);
+      desplazartabla(_uk, 4);
       _yk = lecturaPosicionAngular(PIN_POT);
-
+      _ek[0] = _Ref - _yk;
+    
       switch (SYSTEM_STATE)
       {
         // Modo en espera 
@@ -55,6 +59,7 @@ void tareaControl(void* parameters){
           _r_vel_man = 0;
           _M1 = MOTORS_MIN_SPEED-200;
           _M2 = MOTORS_MIN_SPEED-200;
+          _uk[0] = 0;
           break;
 
         // Modo ready con los motores activos  
@@ -74,6 +79,7 @@ void tareaControl(void* parameters){
 
           _M1 = MOTORS_MIN_SPEED-200;
           _M2 = MOTORS_MIN_SPEED-200;
+          _uk[0] = 0;
 
           break;
         
@@ -92,9 +98,29 @@ void tareaControl(void* parameters){
           r_sin = Amp * (float) sin(2. * M_PI * Freq * t );
           r_square = Amp * (float)(r_sin > 0.0);
           _Ref = r_square;
+          // Acción Proporcional
+          _pk = _ek[0] * _Kp;
+          // Acción integral
+          _ik[0] = 0.5*_Kp * _Ki *_Tm * (_ek[0] + _ek[1]) + _ik[1];
 
+          // anti-Windup (pendiente)
+          _ik[0] = Clip(_ik[0], 300, -300); // Limitada a mano de momento
+
+          // Acción diferencial
+          _dk = (_Kp * _Kd / _Tm) * (_ek[0] - _ek[1]);
+
+          _uk[0] = _pk + _ik[0] + _dk;
+
+          // Escritura de la acción de control en los motores
+          _vM1_ms = _v_ref_ms + _uk[0];
+          _vM1_ms = Clip(_vM1_ms,MOTORS_MAX_SPEED_CTRL,MOTORS_MIN_SPEED_CTRL);
+          
+          _vM2_ms = _v_ref_ms - _uk[0];
+          _vM2_ms = Clip(_vM2_ms,MOTORS_MAX_SPEED_CTRL,MOTORS_MIN_SPEED_CTRL);
+          _M1 = _vM1_ms;
+          _M2 = _vM2_ms;
           break;
-        
+
         default:
           break;
       }

@@ -9,6 +9,7 @@
 #include <ESP32Servo.h>
 #include <ESC.h>
 #include <math.h>
+#include <controlDigital.h>
 
 extern float volatile _yk,_r_vel_man,_M1,_M2,Amp,Freq;
 

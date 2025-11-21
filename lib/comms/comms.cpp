@@ -70,6 +70,9 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
         cJSON *cmd_event = cJSON_GetObjectItem(root, "event");
         cJSON *cmd_vel_man = cJSON_GetObjectItem(root, "vel_man");
         cJSON *cmd_ctrl_mode = cJSON_GetObjectItem(root, "ctrl_mode");
+        cJSON *cmd_kp = cJSON_GetObjectItem(root, "Kp");
+        cJSON *cmd_ki = cJSON_GetObjectItem(root, "Ki");
+        cJSON *cmd_kd = cJSON_GetObjectItem(root, "Kd");
         //cJSON *tm_item = cJSON_GetObjectItem(root, "tm");
       
         if (cJSON_IsString(cmd_ctrl_mode) && (cmd_ctrl_mode->valuestring != NULL)) {
@@ -126,6 +129,23 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
         }
 
+        if (cJSON_IsString(cmd_kp) && (cmd_kp->valuestring != NULL)) {
+          _Kp =atof(cmd_kp->valuestring);
+          //event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+
+        }
+
+        if (cJSON_IsString(cmd_ki) && (cmd_ki->valuestring != NULL)) {
+          _Ki =atof(cmd_ki->valuestring);
+          //event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+
+        }
+
+        if (cJSON_IsString(cmd_kd) && (cmd_kd->valuestring != NULL)) {
+          _Kd =atof(cmd_kd->valuestring);
+          //event_dispatcher(&SYSTEM_STATE, &SYSTEM_EVENTS);
+
+        }
 
 
         // if (cJSON_IsString(tm_item) && (tm_item->valuestring != NULL)) {
@@ -182,10 +202,15 @@ void tareaTransmision(void* parameters){
     data[0] = (float) SYSTEM_STATE;
     data[1] = (float)_yk;
     data[2] = (float)_Ref;
+    data[3] = (float)_uk[0];
+    data[4] = (float)_ek[0];
     data[5] = (float)_M1;
     data[6] = (float)_M2;
     data[7] = (float)_r_vel_man;
     data[9] = (float)SYSTEM_CRTL_MODE;
+    data[13] = (float)_Kp;
+    data[14] = (float)_Ki;
+    data[15] = (float)_Kd;
     webSocketSendMainDataBinary(data, WEBSOCKET_DATA_LENGH);
     Serial.print("Enviado:");
     Serial.println(_Ref);

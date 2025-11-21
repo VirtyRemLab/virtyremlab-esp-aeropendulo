@@ -11,7 +11,7 @@
 #include <states.h>
 #include <control.h>
 
-#define WEBSOCKET_DATA_LENGH 15
+#define WEBSOCKET_DATA_LENGH 16
 
 
 extern String mensaje;
