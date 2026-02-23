@@ -1,6 +1,6 @@
 #include "control.h"
 
-float volatile  _r_vel_man=0,_M1=0,_M2=0,Amp=15,Freq=1/15.0;
+float volatile  _r_vel_man=0,_M1=0,_M2=0,Amp=15,Freq=1/35.0;
 bool volatile  _motors_power=false;
 
 float volatile _uk[4],_ik[4],_dk,_pk, _ek[4], _yk=0,_Tm=0.001 ; 
