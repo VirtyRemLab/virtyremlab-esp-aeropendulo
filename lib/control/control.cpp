@@ -10,8 +10,12 @@ float r_sin = 0;
 float r_square = 0;
 double t=0.0;
 
+// Filtrado de la derivada "ideal"
+float noisy_d_t = 0, T_f = 0.05,d_t=0;
+float alpha_d = T_f / (T_f + _Tm);
+
 // Variables motores
-ESC _esc_M1 (MOTOR1_ESC_PIN, 1000, 2000, MOTORS_ARM_SPEED); 
+ESC _esc_M1(MOTOR1_ESC_PIN, 1000, 2000, MOTORS_ARM_SPEED);
 ESC _esc_M2 (MOTOR2_ESC_PIN, 1000, 2000, MOTORS_ARM_SPEED); 
 
 float lecturaPosicionAngular(adc1_channel_t adc_channel){
@@ -107,7 +111,9 @@ void tareaControl(void* parameters){
           _ik[0] = Clip(_ik[0], 300, -300); // Limitada a mano de momento
 
           // Acción diferencial
-          _dk = (_Kp * _Kd / _Tm) * (_ek[0] - _ek[1]);
+          noisy_d_t = (_ek[0] - _ek[1])/_Tm;
+          d_t = alpha_d * d_t + (1.0 - alpha_d) * noisy_d_t;
+          _dk = (_Kp * _Kd) *d_t;
 
           _uk[0] = _pk + _ik[0] + _dk;
 

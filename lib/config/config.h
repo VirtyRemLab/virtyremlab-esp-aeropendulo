@@ -18,9 +18,14 @@
 #define WS_RECONNECT_S 5000
 
 //SSID y Credenciales 
-#define SSID  "Uniovi-i40"     
-#define PASSWORD  "1000000001" 
+// #define SSID  "Uniovi-i40"     
+// #define PASSWORD  "1000000001" 
 
+//#define SSID  "MeetingRoom"     
+//#define PASSWORD  "automatica" 
+
+#define SSID  "maiind"     
+#define PASSWORD  "tullavealfuturo"
 // #define SSID  "--"     
 // #define PASSWORD  "DBggArg_40_4B"
 
@@ -41,7 +46,7 @@
 
 // Pines del motor
 #define MOTOR1_ESC_PIN 13 //
-#define MOTOR2_ESC_PIN 12 //
+#define MOTOR2_ESC_PIN 14 //
 #define MOTORS_POWER_PIN 25 //
 // Valores de calibración de los ESC configurados con el sofware BLHeliSuite (windows + arduino UNO) 
 #define MOTORS_MIN_SPEED 1012 
